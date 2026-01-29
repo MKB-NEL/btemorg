@@ -2,118 +2,1838 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BTEMORG | Departments</title>
-    <link rel="stylesheet" href="css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>btem • Enterprise Digital Platform</title>
+    <meta name="description" content="Global digital services, talent acquisition, and innovative project showcase. Premium solutions for modern enterprises.">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/x-icon" href="https://img.icons8.com/color/96/000000/organization.png">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400;700&family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* =========================================
+           1. CORE VARIABLES - LIGHT THEME
+           ========================================= */
+        :root {
+            --or-light-bg: #f8f9fa;
+            --or-white: #ffffff;
+            --or-blue: #0066FF;
+            --or-blue-dark: #0052CC;
+            --or-blue-light: #e6f6ff;
+            --or-gold: #d4af37;
+            --or-gold-light: #fff8e1;
+            --or-accent: #7B61FF;
+            --or-success: #10b981;
+            --or-error: #ef4444;
+            --or-warning: #f59e0b;
+            --or-text: #333333;
+            --or-text-muted: #666666;
+            --or-border: #e0e0e0;
+            --or-border-dark: #cccccc;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 8px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 16px rgba(0,0,0,0.1);
+            --shadow-xl: 0 12px 24px rgba(0,0,0,0.15);
+            --transition: all 0.25s ease;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            font-family: 'Roboto', sans-serif;
+            background: var(--or-light-bg);
+            color: var(--or-text);
+            line-height: 1.6;
+            height: 100%;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        /* =========================================
+           2. PREMIUM NOTIFICATION COMPONENT
+           ========================================= */
+        .notification-container {
+            position: fixed;
+            top: env(safe-area-inset-top, 20px);
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        .notification {
+            position: relative;
+            background: var(--or-white);
+            border-radius: 100px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            max-width: 400px;
+            width: 90%;
+            transform-origin: center;
+            opacity: 0;
+            transform: scale(0.5) translateY(-20px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: all;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            border-radius: var(--radius-md);
+            max-width: 90%;
+        }
+
+        .notification-content {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease 0.3s;
+        }
+
+        .notification.show .notification-content {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .notification-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .notification.success .notification-icon {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--or-success);
+        }
+
+        .notification.error .notification-icon {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--or-error);
+        }
+
+        .notification.info .notification-icon {
+            background: rgba(0, 102, 255, 0.1);
+            color: var(--or-blue);
+        }
+
+        .notification.warning .notification-icon {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--or-warning);
+        }
+
+        .notification-text {
+            flex: 1;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1.4;
+            color: var(--or-text);
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            color: var(--or-text-muted);
+            font-size: 16px;
+            cursor: pointer;
+            padding: 4px;
+            margin-left: 8px;
+            transition: color 0.2s;
+        }
+
+        .notification-close:hover {
+            color: var(--or-text);
+        }
+
+        /* =========================================
+           3. LOADING SPINNER
+           ========================================= */
+        .loading-spinner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loading-spinner.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(0, 102, 255, 0.1);
+            border-top: 4px solid var(--or-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* =========================================
+           4. TOP HEADER BAR
+           ========================================= */
+        .top-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--or-white);
+            padding: 16px;
+            border-bottom: 1px solid var(--or-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .logo {
+            font-family: 'Roboto Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 24px;
+            color: var(--or-text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        
+        .logo i { 
+            color: var(--or-blue); 
+            font-size: 20px; 
+        }
+        
+        .logo span { 
+            background: linear-gradient(135deg, var(--or-blue), var(--or-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .enterprise-badge {
+            background: linear-gradient(135deg, var(--or-blue), var(--or-accent));
+            color: white;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .notification-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--or-text-muted);
+            cursor: pointer;
+            padding: 8px;
+            position: relative;
+        }
+
+        /* =========================================
+           5. MAIN CONTAINER STRUCTURE
+           ========================================= */
+        .main-container {
+            min-height: 100vh;
+            padding-bottom: 80px;
+            position: relative;
+        }
+
+        /* =========================================
+           6. HERO SECTION
+           ========================================= */
+        .hero {
+            padding: 40px 16px;
+            background: linear-gradient(135deg, var(--or-white) 0%, var(--or-light-bg) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 60%;
+            height: 200%;
+            background: radial-gradient(circle at center, rgba(0, 102, 255, 0.08) 0%, transparent 70%);
+            z-index: 0;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .hero-text {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .hero-title {
+            font-family: 'Roboto Condensed', sans-serif;
+            font-size: 48px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--or-blue) 0%, var(--or-accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 36px;
+            }
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            color: var(--or-text-muted);
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+
+        .hero-stats {
+            background: var(--or-white);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            border: 1px solid var(--or-border);
+            box-shadow: var(--shadow-md);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .stats-content {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .stats-icon {
+            font-size: 40px;
+            color: var(--or-blue);
+            opacity: 0.8;
+        }
+
+        .stats-number {
+            font-size: 48px;
+            font-weight: 700;
+            font-family: 'Roboto Condensed', sans-serif;
+            background: linear-gradient(135deg, var(--or-blue), var(--or-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+        }
+
+        .stats-label {
+            font-size: 14px;
+            color: var(--or-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 8px;
+        }
+
+        /* =========================================
+           7. DEPARTMENTS CAROUSEL
+           ========================================= */
+        .departments-section {
+            padding: 40px 16px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-family: 'Roboto Condensed', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--or-text);
+        }
+
+        .section-subtitle {
+            color: var(--or-text-muted);
+            font-size: 16px;
+        }
+
+        .view-all {
+            color: var(--or-blue);
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .departments-carousel {
+            position: relative;
+            overflow: hidden;
+            border-radius: var(--radius-lg);
+            background: var(--or-white);
+            border: 1px solid var(--or-border);
+            box-shadow: var(--shadow-md);
+        }
+
+        .carousel-container {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+
+        .carousel-slide {
+            min-width: 100%;
+            padding: 24px;
+        }
+
+        .carousel-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 16px;
+        }
+
+        .carousel-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--or-border);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .carousel-indicator.active {
+            background: var(--or-blue);
+            transform: scale(1.2);
+        }
+
+        .carousel-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--or-text);
+            font-size: 18px;
+            box-shadow: var(--shadow-md);
+            z-index: 2;
+        }
+
+        .carousel-nav.prev {
+            left: 12px;
+        }
+
+        .carousel-nav.next {
+            right: 12px;
+        }
+
+        /* =========================================
+           8. DEPARTMENT CARD DESIGN
+           ========================================= */
+        .department-card {
+            background: var(--or-white);
+            cursor: pointer;
+            transition: var(--transition);
+            height: 100%;
+        }
+
+        .department-card:active {
+            transform: translateY(2px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .card-logo {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--radius-md);
+            object-fit: cover;
+            background: var(--or-light-bg);
+            padding: 12px;
+            border: 1px solid var(--or-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-logo i {
+            font-size: 28px;
+            color: var(--or-blue);
+        }
+
+        .card-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--or-text);
+            margin-bottom: 4px;
+        }
+
+        .card-meta {
+            display: flex;
+            gap: 16px;
+            color: var(--or-text-muted);
+            font-size: 14px;
+        }
+
+        .card-description {
+            color: var(--or-text-muted);
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .card-image {
+            width: 100%;
+            height: 200px;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--or-light-bg), var(--or-white));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .department-card:hover .card-image img {
+            transform: scale(1.05);
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .users-count {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .open-site-btn {
+            background: rgba(0, 102, 255, 0.1);
+            color: var(--or-blue);
+            border: none;
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .open-site-btn:hover {
+            background: rgba(0, 102, 255, 0.2);
+            transform: translateX(4px);
+        }
+
+        /* =========================================
+           9. JOBS SECTION
+           ========================================= */
+        .jobs-section {
+            padding: 40px 16px;
+            background: var(--or-white);
+            border-top: 1px solid var(--or-border);
+            border-bottom: 1px solid var(--or-border);
+        }
+
+        .jobs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .job-card {
+            background: var(--or-light-bg);
+            border: 1px solid var(--or-border);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .job-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--or-blue);
+        }
+
+        .job-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--or-text);
+            margin-bottom: 8px;
+        }
+
+        .job-meta {
+            display: flex;
+            gap: 16px;
+            color: var(--or-text-muted);
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .job-description {
+            color: var(--or-text-muted);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .job-apply-btn {
+            background: var(--or-blue);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+        }
+
+        .job-apply-btn:hover {
+            background: var(--or-blue-dark);
+            transform: translateY(-2px);
+        }
+
+        /* =========================================
+           10. SERVICES SECTION
+           ========================================= */
+        .services-section {
+            padding: 60px 16px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 40px;
+        }
+
+        .service-card {
+            background: var(--or-white);
+            border: 1px solid var(--or-border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .service-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+            border-color: transparent;
+        }
+
+        .service-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--or-blue), var(--or-accent));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            color: white;
+            font-size: 24px;
+        }
+
+        .service-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--or-text);
+        }
+
+        .service-description {
+            color: var(--or-text-muted);
+            line-height: 1.6;
+        }
+
+        /* =========================================
+           11. SEARCH BAR
+           ========================================= */
+        .search-container {
+            padding: 40px 16px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .search-bar {
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 18px 18px 18px 52px;
+            background: var(--or-white);
+            border: 2px solid var(--or-border);
+            border-radius: var(--radius-lg);
+            font-size: 16px;
+            color: var(--or-text);
+            transition: var(--transition);
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--or-blue);
+            box-shadow: 0 0 0 3px var(--or-blue-light);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--or-text-muted);
+            font-size: 20px;
+        }
+
+        .search-results {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--or-white);
+            border: 2px solid var(--or-border);
+            border-radius: var(--radius-md);
+            margin-top: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+            box-shadow: var(--shadow-xl);
+            z-index: 100;
+        }
+
+        .search-results.visible {
+            display: block;
+        }
+
+        .search-result-item {
+            padding: 16px;
+            border-bottom: 1px solid var(--or-border);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-result-item:hover {
+            background: var(--or-light-bg);
+        }
+
+        .result-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--or-text);
+        }
+
+        .result-type {
+            font-size: 12px;
+            color: var(--or-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .result-description {
+            font-size: 14px;
+            color: var(--or-text-muted);
+        }
+
+        /* =========================================
+           12. FOOTER
+           ========================================= */
+        .footer {
+            background: var(--or-text);
+            color: white;
+            padding: 60px 16px 20px;
+            margin-top: 60px;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-brand {
+            max-width: 300px;
+        }
+
+        .footer-logo {
+            font-family: 'Roboto Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 28px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            margin-bottom: 16px;
+        }
+
+        .footer-tagline {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .footer-column h4 {
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column li {
+            margin-bottom: 12px;
+        }
+
+        .footer-column a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-column a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* =========================================
+           13. BOTTOM NAVIGATION
+           ========================================= */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--or-white);
+            border-top: 1px solid var(--or-border);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            z-index: 100;
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--or-text-muted);
+            transition: var(--transition);
+            padding: 8px;
+            min-width: 70px;
+        }
+
+        .nav-item.active {
+            color: var(--or-blue);
+        }
+
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 6px;
+        }
+
+        .nav-label {
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .admin-btn {
+            background: linear-gradient(135deg, var(--or-blue), var(--or-accent));
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            margin-top: -20px;
+            box-shadow: 0 4px 16px rgba(0, 102, 255, 0.3);
+            transition: var(--transition);
+        }
+
+        .admin-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 8px rgba(0, 102, 255, 0.3);
+        }
+
+        /* =========================================
+           14. RESPONSIVE DESIGN
+           ========================================= */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 36px;
+            }
+            
+            .section-title {
+                font-size: 24px;
+            }
+            
+            .services-grid,
+            .jobs-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .carousel-nav {
+                width: 36px;
+                height: 36px;
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 28px;
+            }
+            
+            .stats-number {
+                font-size: 36px;
+            }
+            
+            .section-title {
+                font-size: 20px;
+            }
+            
+            .department-card {
+                padding: 16px;
+            }
+            
+            .card-title {
+                font-size: 20px;
+            }
+        }
+
+        /* =========================================
+           15. UTILITY CLASSES
+           ========================================= */
+        .hidden {
+            display: none !important;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-20 { margin-top: 20px; }
+        .mt-40 { margin-top: 40px; }
+        .mb-20 { margin-bottom: 20px; }
+        .mb-40 { margin-bottom: 40px; }
+
+        /* =========================================
+           16. MOBILE OPTIMIZATIONS
+           ========================================= */
+        @media (min-width: 769px) {
+            body::before {
+                content: "";
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: var(--or-light-bg);
+                color: var(--or-text);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                padding: 20px;
+                font-size: 18px;
+                font-weight: 500;
+                z-index: 9999;
+            }
+            
+            body::before {
+                content: "This website is optimized for mobile view. Please visit on a mobile device or reduce browser width.";
+                background: linear-gradient(135deg, var(--or-blue), var(--or-accent));
+                color: white;
+                font-family: 'Roboto Condensed', sans-serif;
+                font-size: 24px;
+                padding: 40px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-brand">
-                <div class="logo">
-                    <i class="fas fa-network-wired"></i>
+    <!-- Premium Notification Component -->
+    <div class="notification-container" id="notificationContainer">
+        <div class="notification" id="notification">
+            <div class="notification-content">
+                <div class="notification-icon" id="notificationIcon">
+                    <i class="fas fa-check"></i>
                 </div>
-                <span class="brand-name">BTEMORG</span>
-            </div>
-            <div class="nav-links">
-                <a href="#" class="nav-link active">Departments</a>
-                <a href="#" class="nav-link">About</a>
-                <a href="#" class="nav-link">Contact</a>
-                <a href="admin.html" class="nav-link admin-btn">
-                    <i class="fas fa-cog"></i> Admin
-                </a>
-            </div>
-            <div class="mobile-menu-btn">
-                <i class="fas fa-bars"></i>
+                <div class="notification-text" id="notificationText"></div>
+                <button class="notification-close" id="notificationCloseButton">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
         </div>
-    </nav>
+    </div>
 
-    <!-- Hero Section -->
-    <header class="hero">
-        <div class="hero-container">
-            <h1 class="hero-title">Organizational Excellence</h1>
-            <p class="hero-subtitle">Modern departments working together to achieve technological innovation</p>
-            <div class="stats">
-                <div class="stat-item">
-                    <span class="stat-number" id="totalDepartments">0</span>
-                    <span class="stat-label">Departments</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number" id="totalUsers">0</span>
-                    <span class="stat-label">Active Users</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number" id="totalTeams">0</span>
-                    <span class="stat-label">Team Members</span>
-                </div>
-            </div>
-        </div>
-    </header>
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" id="loadingSpinner">
+        <div class="spinner"></div>
+    </div>
 
-    <!-- Main Content -->
-    <main class="main-content">
-        <div class="container">
-            <div class="section-header">
-                <h2>Our Departments</h2>
-                <p>Specialized teams driving innovation across all sectors</p>
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Top Header -->
+        <div class="top-header">
+            <a href="index.html" class="logo">
+                <i class="fas fa-rocket"></i>
+                btem<span>org</span>
+            </a>
+            
+            <div class="enterprise-badge">
+                <i class="fas fa-crown"></i>
+                <span>ENTERPRISE</span>
             </div>
             
-            <!-- Departments Grid -->
-            <div class="departments-grid" id="departmentsContainer">
-                <!-- Departments will be loaded dynamically -->
-                <div class="loading-spinner">
-                    <div class="spinner"></div>
-                    <p>Loading departments...</p>
+            <button class="notification-btn" onclick="showNotification('info', 'Welcome to btemorg Enterprise Platform')">
+                <i class="fas fa-bell"></i>
+            </button>
+        </div>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title">
+                        Enterprise Digital<br>
+                        Platform Redefined
+                    </h1>
+                    <p class="hero-subtitle">
+                        btemorg delivers premium digital services, hires top global talent, 
+                        and showcases innovative projects with enterprise-grade excellence.
+                    </p>
+                </div>
+                
+                <div class="hero-stats">
+                    <div class="stats-content">
+                        <div class="stats-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div>
+                            <div class="stats-number" id="totalUsers">0</div>
+                            <div class="stats-label">Total Active Users Worldwide</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Departments Carousel -->
+        <section class="departments-section">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Our Departments</h2>
+                    <p class="section-subtitle">Specialized teams driving innovation</p>
+                </div>
+                <a href="#all-departments" class="view-all">
+                    View All
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="departments-carousel" id="departmentsCarousel">
+                <button class="carousel-nav prev" onclick="prevDepartmentSlide()">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="carousel-nav next" onclick="nextDepartmentSlide()">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                <div class="carousel-container" id="departmentsContainer">
+                    <!-- Dynamic department slides will be loaded here -->
+                </div>
+                <div class="carousel-indicators" id="departmentsIndicators">
+                    <!-- Dynamic indicators -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Search Bar -->
+        <div class="search-container">
+            <div class="search-bar">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" 
+                       class="search-input" 
+                       id="globalSearchInput"
+                       placeholder="Search departments, jobs, services...">
+                <div class="search-results" id="searchResults">
+                    <!-- Dynamic search results -->
                 </div>
             </div>
         </div>
-    </main>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
+        <!-- Jobs Section -->
+        <section class="jobs-section" id="jobsSection">
+            <div class="section-header" style="max-width: 1200px; margin: 0 auto 30px;">
+                <div>
+                    <h2 class="section-title">Open Positions</h2>
+                    <p class="section-subtitle">Join our global team of specialists</p>
+                </div>
+                <a href="jobs.html" class="view-all">
+                    View All Jobs
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="jobs-grid" id="jobsGrid">
+                <!-- Dynamic job cards will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section class="services-section">
+            <div class="text-center mb-40">
+                <h2 class="section-title">Our Services</h2>
+                <p class="section-subtitle">Premium solutions for modern enterprises</p>
+            </div>
+
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3 class="service-title">Website Development</h3>
+                    <p class="service-description">
+                        Custom enterprise websites with cutting-edge technology and premium design.
+                    </p>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <h3 class="service-title">Talent Acquisition</h3>
+                    <p class="service-description">
+                        Global recruitment of specialized professionals for your organization.
+                    </p>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                    <h3 class="service-title">Project Showcase</h3>
+                    <p class="service-description">
+                        Premium platform to showcase and manage innovative department projects.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
             <div class="footer-content">
                 <div class="footer-brand">
-                    <div class="logo">
-                        <i class="fas fa-network-wired"></i>
-                    </div>
-                    <span class="brand-name">BTEMORG</span>
-                    <p class="footer-tagline">Building the future through organized innovation</p>
+                    <a href="index.html" class="footer-logo">
+                        <i class="fas fa-rocket"></i>
+                        btemorg
+                    </a>
+                    <p class="footer-tagline">
+                        Premium digital solutions for modern enterprises. 
+                        Global reach, technical excellence, specialized teams.
+                    </p>
                 </div>
-                <div class="footer-links">
-                    <div class="footer-column">
-                        <h4>Organization</h4>
-                        <a href="#">About Us</a>
-                        <a href="#">Careers</a>
-                        <a href="#">Press</a>
-                    </div>
-                    <div class="footer-column">
-                        <h4>Resources</h4>
-                        <a href="#">Documentation</a>
-                        <a href="#">Blog</a>
-                        <a href="#">Support</a>
-                    </div>
-                    <div class="footer-column">
-                        <h4>Connect</h4>
-                        <a href="#">Twitter</a>
-                        <a href="#">LinkedIn</a>
-                        <a href="#">GitHub</a>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 BTEMORG. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
 
-    <!-- Scripts -->
-    <script type="module" src="js/firebase-config.js"></script>
-    <script type="module" src="js/main.js"></script>
+                <div class="footer-column">
+                    <h4>Organization</h4>
+                    <ul>
+                        <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                        <li><a href="#departments"><i class="fas fa-building"></i> Departments</a></li>
+                        <li><a href="jobs.html"><i class="fas fa-briefcase"></i> Careers</a></li>
+                        <li><a href="contact.html"><i class="fas fa-envelope"></i> Contact</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h4>Services</h4>
+                    <ul>
+                        <li><a href="contact.html"><i class="fas fa-code"></i> Website Development</a></li>
+                        <li><a href="contact.html"><i class="fas fa-mobile-alt"></i> Digital Solutions</a></li>
+                        <li><a href="contact.html"><i class="fas fa-chart-line"></i> Enterprise Consulting</a></li>
+                        <li><a href="jobs.html"><i class="fas fa-users"></i> Technical Hiring</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h4>Connect</h4>
+                    <ul>
+                        <li><a href="mailto:contact@btemorg.com"><i class="fas fa-envelope"></i> Email</a></li>
+                        <li><a href="contact.html"><i class="fas fa-comments"></i> Get in Touch</a></li>
+                        <li><a href="jobs.html"><i class="fas fa-user-plus"></i> Join Our Team</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; <span id="currentYear"></span> btemorg. All rights reserved.</p>
+            </div>
+        </footer>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <a href="index.html" class="nav-item active">
+                <i class="fas fa-home nav-icon"></i>
+                <span class="nav-label">Home</span>
+            </a>
+            
+            <a href="jobs.html" class="nav-item">
+                <i class="fas fa-briefcase nav-icon"></i>
+                <span class="nav-label">Jobs</span>
+            </a>
+            
+            <!-- Admin Button (Center) -->
+            <button class="admin-btn" onclick="window.location.href='admin.html'">
+                <i class="fas fa-cog"></i>
+            </button>
+            
+            <a href="contact.html" class="nav-item">
+                <i class="fas fa-envelope nav-icon"></i>
+                <span class="nav-label">Contact</span>
+            </a>
+            
+            <a href="#departments" class="nav-item">
+                <i class="fas fa-building nav-icon"></i>
+                <span class="nav-label">Depts</span>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Global notification functions
+        function showNotification(type, message) {
+            const notification = document.getElementById('notification');
+            const notificationIcon = document.getElementById('notificationIcon');
+            const notificationText = document.getElementById('notificationText');
+            
+            // Set notification type
+            notification.className = `notification ${type}`;
+            
+            // Set icon based on type
+            let icon = '';
+            switch(type) {
+                case 'success':
+                    icon = '<i class="fas fa-check"></i>';
+                    break;
+                case 'error':
+                    icon = '<i class="fas fa-exclamation-circle"></i>';
+                    break;
+                case 'warning':
+                    icon = '<i class="fas fa-exclamation-triangle"></i>';
+                    break;
+                case 'info':
+                default:
+                    icon = '<i class="fas fa-info-circle"></i>';
+                    break;
+            }
+            
+            notificationIcon.innerHTML = icon;
+            notificationText.textContent = message;
+            
+            // Start animation
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 50);
+            
+            // Auto dismiss after 3 seconds
+            setTimeout(() => {
+                hideNotification();
+            }, 3000);
+        }
+
+        function hideNotification() {
+            const notification = document.getElementById('notification');
+            notification.classList.remove('show');
+        }
+
+        // Initialize notification close button
+        document.getElementById('notificationCloseButton').addEventListener('click', hideNotification);
+    </script>
+
+    <script type="module">
+        import { db, collection, getDocs, query, orderBy, limit, formatNumber, lightenColor } from './firebase-config.js';
+        
+        // UI Elements
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const totalUsersEl = document.getElementById('totalUsers');
+        const departmentsContainer = document.getElementById('departmentsContainer');
+        const departmentsIndicators = document.getElementById('departmentsIndicators');
+        const jobsGrid = document.getElementById('jobsGrid');
+        const globalSearchInput = document.getElementById('globalSearchInput');
+        const searchResults = document.getElementById('searchResults');
+        
+        // Global variables
+        let allDepartments = [];
+        let allJobs = [];
+        let currentDepartmentSlide = 0;
+        let departmentSlides = [];
+        let departmentInterval;
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set current year
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+            
+            // Load initial data
+            loadInitialData();
+            
+            // Setup search functionality
+            initializeSearch();
+            
+            // Setup active nav item
+            setupNavigation();
+        });
+
+        async function loadInitialData() {
+            loadingSpinner.classList.add('active');
+            
+            try {
+                // Load departments
+                await loadDepartments();
+                
+                // Load jobs
+                await loadJobs();
+                
+                // Load total users
+                await loadTotalUsers();
+                
+                // Start carousel rotation
+                if (departmentSlides.length > 1) {
+                    startDepartmentCarousel();
+                }
+                
+                showNotification('success', 'Dashboard loaded successfully');
+                
+            } catch (error) {
+                console.error('Initial data load error:', error);
+                showNotification('error', 'Failed to load data. Please refresh.');
+            } finally {
+                loadingSpinner.classList.remove('active');
+            }
+        }
+
+        async function loadDepartments() {
+            try {
+                const departmentsQuery = query(
+                    collection(db, 'departments'),
+                    orderBy('createdAt', 'desc'),
+                    limit(10)
+                );
+
+                const snapshot = await getDocs(departmentsQuery);
+                
+                if (snapshot.empty) {
+                    departmentsContainer.innerHTML = `
+                        <div class="carousel-slide">
+                            <div class="department-card">
+                                <div class="card-header">
+                                    <div class="card-logo">
+                                        <i class="fas fa-building"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="card-title">No Departments Yet</h3>
+                                        <div class="card-meta">
+                                            <span><i class="fas fa-info-circle"></i> Coming Soon</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="card-description">
+                                    Departments will be displayed here once added by the admin.
+                                </p>
+                                <div class="card-image">
+                                    <i class="fas fa-plus" style="font-size: 48px; color: var(--or-text-muted);"></i>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Clear existing content
+                departmentsContainer.innerHTML = '';
+                departmentsIndicators.innerHTML = '';
+                departmentSlides = [];
+                allDepartments = [];
+                
+                // Create slides
+                let slideIndex = 0;
+                snapshot.forEach((doc) => {
+                    const dept = {
+                        id: doc.id,
+                        ...doc.data()
+                    };
+                    
+                    allDepartments.push(dept);
+                    
+                    const slide = createDepartmentSlide(dept, slideIndex);
+                    departmentsContainer.appendChild(slide);
+                    departmentSlides.push(slide);
+                    
+                    // Create indicator
+                    const indicator = document.createElement('div');
+                    indicator.className = `carousel-indicator ${slideIndex === 0 ? 'active' : ''}`;
+                    indicator.onclick = () => goToDepartmentSlide(slideIndex);
+                    departmentsIndicators.appendChild(indicator);
+                    
+                    slideIndex++;
+                });
+
+            } catch (error) {
+                console.error('Departments load error:', error);
+                showNotification('error', 'Failed to load departments');
+            }
+        }
+
+        function createDepartmentSlide(dept, index) {
+            const slide = document.createElement('div');
+            slide.className = 'carousel-slide';
+            slide.dataset.index = index;
+            slide.onclick = () => {
+                window.location.href = `department.html?id=${dept.id}`;
+            };
+
+            // Set accent color for this card
+            const accentColor = dept.accentColor || '#0066FF';
+            const lightenedColor = lightenColor(accentColor, 85);
+            
+            // Get random image from department images
+            const images = dept.images || [];
+            const randomImage = images.length > 0 
+                ? images[Math.floor(Math.random() * images.length)]
+                : null;
+
+            slide.innerHTML = `
+                <div class="department-card">
+                    <div class="card-header">
+                        <div class="card-logo" style="background: ${lightenedColor}; border-color: ${accentColor}40;">
+                            ${dept.logo ? 
+                                `<img src="${dept.logo}" alt="${dept.name}" style="width: 100%; height: 100%; object-fit: contain;">` :
+                                `<i class="fas fa-building" style="color: ${accentColor};"></i>`
+                            }
+                        </div>
+                        <div>
+                            <h3 class="card-title">${dept.name}</h3>
+                            <div class="card-meta">
+                                <span><i class="fas fa-calendar"></i> Since ${dept.since || 'N/A'}</span>
+                                <span><i class="fas fa-tag"></i> ${dept.category || 'Uncategorized'}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p class="card-description">
+                        ${dept.shortDescription || dept.description?.substring(0, 120) + '...' || 'No description available.'}
+                    </p>
+                    
+                    <div class="card-image">
+                        ${randomImage ? 
+                            `<img src="${randomImage}" alt="${dept.name}" loading="lazy">` :
+                            `<i class="fas fa-image" style="font-size: 48px; color: var(--or-text-muted);"></i>`
+                        }
+                    </div>
+                    
+                    <div class="card-footer">
+                        <button class="open-site-btn" onclick="event.stopPropagation(); window.open('${dept.website || '#'}', '_blank');">
+                            <i class="fas fa-external-link-alt"></i>
+                            Open Site
+                        </button>
+                        
+                        <div class="users-count" style="background: ${lightenedColor}; color: ${accentColor};">
+                            <i class="fas fa-users"></i>
+                            ${formatNumber(dept.usersCount || 0)} users
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            return slide;
+        }
+
+        async function loadJobs() {
+            try {
+                const jobsQuery = query(
+                    collection(db, 'jobs'),
+                    where('active', '==', true),
+                    orderBy('createdAt', 'desc'),
+                    limit(4)
+                );
+
+                const snapshot = await getDocs(jobsQuery);
+                
+                if (snapshot.empty) {
+                    jobsGrid.innerHTML = `
+                        <div class="job-card">
+                            <h3 class="job-title">No Open Positions</h3>
+                            <div class="job-meta">
+                                <span><i class="fas fa-clock"></i> Check back soon</span>
+                            </div>
+                            <p class="job-description">
+                                We're not currently hiring, but check back regularly for new opportunities.
+                            </p>
+                            <button class="job-apply-btn" disabled>
+                                No Positions Available
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Clear existing content
+                jobsGrid.innerHTML = '';
+                allJobs = [];
+                
+                // Create job cards
+                snapshot.forEach((doc) => {
+                    const job = {
+                        id: doc.id,
+                        ...doc.data()
+                    };
+                    
+                    allJobs.push(job);
+                    
+                    const card = createJobCard(job);
+                    jobsGrid.appendChild(card);
+                });
+
+            } catch (error) {
+                console.error('Jobs load error:', error);
+                jobsGrid.innerHTML = `
+                    <div class="job-card">
+                        <h3 class="job-title">Unable to Load Jobs</h3>
+                        <div class="job-meta">
+                            <span><i class="fas fa-exclamation-circle"></i> Connection Error</span>
+                        </div>
+                        <p class="job-description">
+                            Please check your internet connection and try again.
+                        </p>
+                        <button class="job-apply-btn" onclick="location.reload()">
+                            Retry
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        function createJobCard(job) {
+            const card = document.createElement('div');
+            card.className = 'job-card';
+            card.onclick = () => {
+                window.location.href = `job.html?id=${job.id}`;
+            };
+
+            // Format date
+            const postDate = job.createdAt?.toDate ? 
+                job.createdAt.toDate().toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric' 
+                }) : 'Recently';
+
+            card.innerHTML = `
+                <h3 class="job-title">${job.title}</h3>
+                <div class="job-meta">
+                    <span><i class="fas fa-map-marker-alt"></i> ${job.location || 'Remote'}</span>
+                    <span><i class="fas fa-clock"></i> ${postDate}</span>
+                </div>
+                <p class="job-description">
+                    ${job.shortDescription || job.description?.substring(0, 100) + '...' || 'Apply now for this exciting opportunity.'}
+                </p>
+                <button class="job-apply-btn" onclick="event.stopPropagation(); window.location.href='job.html?id=${job.id}'">
+                    Apply Now
+                </button>
+            `;
+
+            return card;
+        }
+
+        async function loadTotalUsers() {
+            try {
+                const snapshot = await getDocs(collection(db, 'departments'));
+                
+                let totalUsers = 0;
+                snapshot.forEach(doc => {
+                    const dept = doc.data();
+                    totalUsers += parseInt(dept.usersCount) || 0;
+                });
+                
+                // Animate counter
+                animateCounter(totalUsersEl, totalUsers);
+                
+            } catch (error) {
+                console.error('Total users load error:', error);
+                totalUsersEl.textContent = '0';
+            }
+        }
+
+        function animateCounter(element, target) {
+            let count = 0;
+            const increment = target / 60;
+            const timer = setInterval(() => {
+                count += increment;
+                if (count >= target) {
+                    element.textContent = formatNumber(Math.round(target));
+                    clearInterval(timer);
+                } else {
+                    element.textContent = formatNumber(Math.round(count));
+                }
+            }, 16);
+        }
+
+        function initializeSearch() {
+            globalSearchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.trim().toLowerCase();
+                
+                if (searchTerm.length === 0) {
+                    searchResults.classList.remove('visible');
+                    return;
+                }
+                
+                // Combine departments and jobs for search
+                const allItems = [
+                    ...allDepartments.map(dept => ({ ...dept, type: 'department' })),
+                    ...allJobs.map(job => ({ ...job, type: 'job' }))
+                ];
+                
+                // Filter items based on search term
+                const results = allItems.filter(item => {
+                    if (item.type === 'department') {
+                        return (
+                            (item.name && item.name.toLowerCase().includes(searchTerm)) ||
+                            (item.description && item.description.toLowerCase().includes(searchTerm)) ||
+                            (item.category && item.category.toLowerCase().includes(searchTerm))
+                        );
+                    } else if (item.type === 'job') {
+                        return (
+                            (item.title && item.title.toLowerCase().includes(searchTerm)) ||
+                            (item.description && item.description.toLowerCase().includes(searchTerm)) ||
+                            (item.location && item.location.toLowerCase().includes(searchTerm))
+                        );
+                    }
+                    return false;
+                }).slice(0, 8); // Limit to 8 results
+                
+                displaySearchResults(results);
+            });
+            
+            // Hide search results when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!globalSearchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                    searchResults.classList.remove('visible');
+                }
+            });
+        }
+
+        function displaySearchResults(results) {
+            searchResults.innerHTML = '';
+            
+            if (results.length === 0) {
+                searchResults.innerHTML = `
+                    <div class="search-result-item" style="text-align: center; color: var(--or-text-muted);">
+                        No results found
+                    </div>
+                `;
+            } else {
+                results.forEach(item => {
+                    const resultItem = document.createElement('div');
+                    resultItem.className = 'search-result-item';
+                    resultItem.onclick = () => {
+                        if (item.type === 'department') {
+                            window.location.href = `department.html?id=${item.id}`;
+                        } else if (item.type === 'job') {
+                            window.location.href = `job.html?id=${item.id}`;
+                        }
+                        searchResults.classList.remove('visible');
+                        globalSearchInput.value = '';
+                    };
+                    
+                    resultItem.innerHTML = `
+                        <div class="result-type">
+                            ${item.type === 'department' ? 'Department' : 'Job Position'}
+                        </div>
+                        <div class="result-title">
+                            ${item.type === 'department' ? item.name : item.title}
+                        </div>
+                        <div class="result-description">
+                            ${item.type === 'department' ? 
+                                (item.shortDescription || item.description?.substring(0, 80) + '...') :
+                                (item.shortDescription || item.description?.substring(0, 80) + '...')
+                            }
+                        </div>
+                    `;
+                    
+                    searchResults.appendChild(resultItem);
+                });
+            }
+            
+            searchResults.classList.add('visible');
+        }
+
+        function setupNavigation() {
+            const navItems = document.querySelectorAll('.nav-item');
+            const currentPath = window.location.pathname;
+            
+            navItems.forEach(item => {
+                if (item.href && currentPath.includes(item.href.replace(window.location.origin, ''))) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+
+        // Department carousel functions
+        function startDepartmentCarousel() {
+            clearInterval(departmentInterval);
+            departmentInterval = setInterval(() => {
+                nextDepartmentSlide();
+            }, 5000);
+        }
+
+        window.nextDepartmentSlide = function() {
+            if (departmentSlides.length === 0) return;
+            
+            currentDepartmentSlide = (currentDepartmentSlide + 1) % departmentSlides.length;
+            updateDepartmentCarousel();
+        };
+
+        window.prevDepartmentSlide = function() {
+            if (departmentSlides.length === 0) return;
+            
+            currentDepartmentSlide = (currentDepartmentSlide - 1 + departmentSlides.length) % departmentSlides.length;
+            updateDepartmentCarousel();
+        };
+
+        window.goToDepartmentSlide = function(index) {
+            if (index < 0 || index >= departmentSlides.length) return;
+            
+            currentDepartmentSlide = index;
+            updateDepartmentCarousel();
+        };
+
+        function updateDepartmentCarousel() {
+            const translateX = -currentDepartmentSlide * 100;
+            departmentsContainer.style.transform = `translateX(${translateX}%)`;
+            
+            // Update indicators
+            const indicators = departmentsIndicators.querySelectorAll('.carousel-indicator');
+            indicators.forEach((indicator, index) => {
+                indicator.classList.toggle('active', index === currentDepartmentSlide);
+            });
+            
+            // Reset rotation timer
+            if (departmentSlides.length > 1) {
+                clearInterval(departmentInterval);
+                startDepartmentCarousel();
+            }
+        }
+
+        // Expose functions to global scope
+        window.showNotification = showNotification;
+        window.hideNotification = hideNotification;
+    </script>
 </body>
 </html>
