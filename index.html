@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BTEMORG | Departments</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="https://img.icons8.com/color/96/000000/organization.png">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <div class="logo">
+                    <i class="fas fa-network-wired"></i>
+                </div>
+                <span class="brand-name">BTEMORG</span>
+            </div>
+            <div class="nav-links">
+                <a href="#" class="nav-link active">Departments</a>
+                <a href="#" class="nav-link">About</a>
+                <a href="#" class="nav-link">Contact</a>
+                <a href="admin.html" class="nav-link admin-btn">
+                    <i class="fas fa-cog"></i> Admin
+                </a>
+            </div>
+            <div class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="hero-container">
+            <h1 class="hero-title">Organizational Excellence</h1>
+            <p class="hero-subtitle">Modern departments working together to achieve technological innovation</p>
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-number" id="totalDepartments">0</span>
+                    <span class="stat-label">Departments</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="totalUsers">0</span>
+                    <span class="stat-label">Active Users</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="totalTeams">0</span>
+                    <span class="stat-label">Team Members</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="section-header">
+                <h2>Our Departments</h2>
+                <p>Specialized teams driving innovation across all sectors</p>
+            </div>
+            
+            <!-- Departments Grid -->
+            <div class="departments-grid" id="departmentsContainer">
+                <!-- Departments will be loaded dynamically -->
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                    <p>Loading departments...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="logo">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                    <span class="brand-name">BTEMORG</span>
+                    <p class="footer-tagline">Building the future through organized innovation</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Organization</h4>
+                        <a href="#">About Us</a>
+                        <a href="#">Careers</a>
+                        <a href="#">Press</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Resources</h4>
+                        <a href="#">Documentation</a>
+                        <a href="#">Blog</a>
+                        <a href="#">Support</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Connect</h4>
+                        <a href="#">Twitter</a>
+                        <a href="#">LinkedIn</a>
+                        <a href="#">GitHub</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 BTEMORG. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script type="module" src="js/firebase-config.js"></script>
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
