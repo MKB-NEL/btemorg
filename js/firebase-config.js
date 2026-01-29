@@ -30,7 +30,7 @@ async function uploadImage(file) {
     return data.success ? data.data.url : null;
 }
 
-// Predefined colors (Stripe-inspired palette)
+// Predefined colors (Professional palette)
 const PREDEFINED_COLORS = [
     '#0066FF', '#00D4AA', '#7B61FF', '#FF6B82',
     '#00C6FF', '#8B46FF', '#FF8F2D', '#2DD4BF',
