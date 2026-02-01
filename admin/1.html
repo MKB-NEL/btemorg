@@ -1,0 +1,1901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BTEM Admin Panel</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --sidebar-width: 260px;
+            --header-height: 70px;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            --hover-shadow: 0 10px 15px rgba(0, 0, 0, 0.07);
+        }
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background-color: #f8fafc;
+            overflow-x: hidden;
+        }
+        
+        /* Sidebar Styles */
+        #sidebar {
+            width: var(--sidebar-width);
+            background-color: white;
+            position: fixed;
+            height: 100vh;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            z-index: 100;
+            transition: all 0.3s;
+        }
+        
+        .sidebar-logo {
+            padding: 1.5rem 1.5rem 1rem;
+            border-bottom: 1px solid #eef2f7;
+        }
+        
+        .sidebar-logo h2 {
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 0;
+        }
+        
+        .sidebar-menu {
+            padding: 1.5rem 0;
+        }
+        
+        .sidebar-item {
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            color: #64748b;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        
+        .sidebar-item:hover, .sidebar-item.active {
+            background-color: #f1f5f9;
+            color: var(--primary-color);
+            border-right: 3px solid var(--primary-color);
+        }
+        
+        .sidebar-item i {
+            margin-right: 12px;
+            font-size: 1.2rem;
+        }
+        
+        /* Main Content */
+        #main-content {
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            transition: all 0.3s;
+        }
+        
+        /* Header */
+        #header {
+            height: var(--header-height);
+            background-color: white;
+            box-shadow: var(--card-shadow);
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 99;
+        }
+        
+        #header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+            color: #334155;
+        }
+        
+        /* Content Area */
+        #content {
+            padding: 2rem;
+            min-height: calc(100vh - var(--header-height));
+        }
+        
+        /* Cards */
+        .dashboard-card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s, box-shadow 0.3s;
+            overflow: hidden;
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--hover-shadow);
+        }
+        
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+        }
+        
+        .stats-number {
+            font-size: 2.2rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+        
+        .stats-label {
+            color: #64748b;
+            font-weight: 500;
+        }
+        
+        /* Color badges */
+        .color-badge {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+            border: 2px solid #f1f5f9;
+        }
+        
+        /* Member cards */
+        .member-card {
+            border-radius: 12px;
+            overflow: hidden;
+            border: none;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s;
+        }
+        
+        .member-card:hover {
+            box-shadow: var(--hover-shadow);
+        }
+        
+        .member-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .member-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .status-active {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-alumni {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .visibility-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .visibility-public {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .visibility-internal {
+            background-color: #f3e8ff;
+            color: #7c3aed;
+        }
+        
+        /* Form controls */
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            padding: 0.75rem 1rem;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+        }
+        
+        /* Modal styles */
+        .modal-header {
+            border-bottom: 1px solid #eef2f7;
+            padding: 1.5rem;
+        }
+        
+        .modal-footer {
+            border-top: 1px solid #eef2f7;
+            padding: 1.5rem;
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+        }
+        
+        /* Image upload */
+        .image-upload-container {
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            background-color: #f8fafc;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .image-upload-container:hover {
+            border-color: var(--primary-color);
+            background-color: #f0f4ff;
+        }
+        
+        .image-upload-container i {
+            font-size: 3rem;
+            color: #94a3b8;
+            margin-bottom: 1rem;
+        }
+        
+        .image-preview {
+            width: 120px;
+            height: 120px;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 3px solid white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Color picker */
+        .color-picker {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            #sidebar {
+                margin-left: calc(-1 * var(--sidebar-width));
+            }
+            
+            #sidebar.show {
+                margin-left: 0;
+            }
+            
+            #main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+            
+            .sidebar-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 99;
+                display: none;
+            }
+            
+            .sidebar-overlay.show {
+                display: block;
+            }
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a1a1a1;
+        }
+        
+        /* Badges */
+        .badge-planning {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        
+        .badge-active {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        .badge-completed {
+            background-color: #e0e7ff;
+            color: #3730a3;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <!-- Sidebar -->
+    <div id="sidebar">
+        <div class="sidebar-logo">
+            <h2>btem</h2>
+            <small class="text-muted">Admin Panel</small>
+        </div>
+        
+        <div class="sidebar-menu">
+            <a href="#" class="sidebar-item active" data-section="dashboard">
+                <i class="bi bi-speedometer2"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" class="sidebar-item" data-section="departments">
+                <i class="bi bi-building"></i>
+                <span>Departments</span>
+            </a>
+            <a href="#" class="sidebar-item" data-section="members">
+                <i class="bi bi-people"></i>
+                <span>Members</span>
+            </a>
+            <a href="#" class="sidebar-item" data-section="projects">
+                <i class="bi bi-kanban"></i>
+                <span>Projects</span>
+            </a>
+        </div>
+        
+        <div class="px-4 mt-4">
+            <div class="card dashboard-card">
+                <div class="card-body">
+                    <h6 class="card-title">Firebase Status</h6>
+                    <div class="d-flex align-items-center mt-2">
+                        <div class="bg-success rounded-circle me-2" style="width: 10px; height: 10px;"></div>
+                        <small class="text-muted" id="firebaseStatus">Connected</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div id="main-content">
+        <!-- Header -->
+        <header id="header">
+            <div class="d-flex align-items-center">
+                <button class="btn btn-link d-lg-none me-3" id="sidebarToggle">
+                    <i class="bi bi-list" style="font-size: 1.5rem;"></i>
+                </button>
+                <h1 id="pageTitle">Dashboard</h1>
+            </div>
+            
+            <div class="d-flex align-items-center">
+                <span class="text-muted me-3 d-none d-md-block">Admin Panel</span>
+                <div class="dropdown">
+                    <button class="btn btn-light rounded-circle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-person-circle" style="font-size: 1.5rem;"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Settings</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Content Area -->
+        <div id="content">
+            <!-- Dashboard Section -->
+            <section id="dashboardSection" class="content-section">
+                <div class="row mb-4">
+                    <div class="col-md-4 mb-4">
+                        <div class="card dashboard-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <p class="stats-label">Total Members</p>
+                                        <h2 class="stats-number" id="totalMembers">0</h2>
+                                    </div>
+                                    <div class="card-icon bg-primary">
+                                        <i class="bi bi-people"></i>
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <span class="text-success">
+                                        <i class="bi bi-arrow-up-right"></i> 
+                                        <span id="activeMembers">0</span> active
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-4">
+                        <div class="card dashboard-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <p class="stats-label">Total Departments</p>
+                                        <h2 class="stats-number" id="totalDepartments">0</h2>
+                                    </div>
+                                    <div class="card-icon bg-success">
+                                        <i class="bi bi-building"></i>
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <small class="text-muted">Organizational structure</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-4">
+                        <div class="card dashboard-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <p class="stats-label">Total Projects</p>
+                                        <h2 class="stats-number" id="totalProjects">0</h2>
+                                    </div>
+                                    <div class="card-icon bg-warning">
+                                        <i class="bi bi-kanban"></i>
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <span class="text-warning">
+                                        <i class="bi bi-arrow-up-right"></i> 
+                                        <span id="activeProjects">0</span> active
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card dashboard-card">
+                            <div class="card-header bg-white border-bottom-0 py-3">
+                                <h5 class="card-title mb-0">Recent Activity</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted">Recent changes will appear here once data is available.</p>
+                                <div id="recentActivity">
+                                    <!-- Recent activity items will be added here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Departments Section -->
+            <section id="departmentsSection" class="content-section d-none">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="h4 mb-0">Departments</h2>
+                    <button class="btn btn-primary" id="addDepartmentBtn">
+                        <i class="bi bi-plus-circle me-2"></i>Add Department
+                    </button>
+                </div>
+                
+                <div class="row" id="departmentsList">
+                    <!-- Departments will be loaded here -->
+                </div>
+            </section>
+            
+            <!-- Members Section -->
+            <section id="membersSection" class="content-section d-none">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="h4 mb-0">Members</h2>
+                    <button class="btn btn-primary" id="addMemberBtn">
+                        <i class="bi bi-plus-circle me-2"></i>Add Member
+                    </button>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6 col-lg-3 mb-3">
+                        <select class="form-select" id="memberFilterDepartment">
+                            <option value="">All Departments</option>
+                            <!-- Department options will be added here -->
+                        </select>
+                    </div>
+                    <div class="col-md-6 col-lg-3 mb-3">
+                        <select class="form-select" id="memberFilterStatus">
+                            <option value="">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="alumni">Alumni</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="row" id="membersList">
+                    <!-- Members will be loaded here -->
+                </div>
+            </section>
+            
+            <!-- Projects Section -->
+            <section id="projectsSection" class="content-section d-none">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="h4 mb-0">Projects</h2>
+                    <button class="btn btn-primary" id="addProjectBtn">
+                        <i class="bi bi-plus-circle me-2"></i>Add Project
+                    </button>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6 col-lg-3 mb-3">
+                        <select class="form-select" id="projectFilterDepartment">
+                            <option value="">All Departments</option>
+                            <!-- Department options will be added here -->
+                        </select>
+                    </div>
+                    <div class="col-md-6 col-lg-3 mb-3">
+                        <select class="form-select" id="projectFilterStatus">
+                            <option value="">All Status</option>
+                            <option value="planning">Planning</option>
+                            <option value="active">Active</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="row" id="projectsList">
+                    <!-- Projects will be loaded here -->
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Department Modal -->
+    <div class="modal fade" id="departmentModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="departmentModalTitle">Add Department</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="departmentForm">
+                        <input type="hidden" id="departmentId">
+                        
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label for="departmentName" class="form-label">Department Name *</label>
+                                <input type="text" class="form-control" id="departmentName" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="departmentColor" class="form-label">Accent Color</label>
+                                <div class="d-flex align-items-center">
+                                    <input type="color" class="color-picker me-2" id="departmentColor" value="#4361ee">
+                                    <input type="text" class="form-control" id="departmentColorText" value="#4361ee" readonly style="max-width: 120px;">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="departmentDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="departmentDescription" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="departmentHead" class="form-label">Department Head (Optional)</label>
+                            <select class="form-select" id="departmentHead">
+                                <option value="">Select a member</option>
+                                <!-- Members will be populated here -->
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveDepartmentBtn">Save Department</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Member Modal -->
+    <div class="modal fade" id="memberModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="memberModalTitle">Add Member</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="memberForm">
+                        <input type="hidden" id="memberId">
+                        
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="memberName" class="form-label">Full Name *</label>
+                                        <input type="text" class="form-control" id="memberName" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="memberRole" class="form-label">Role / Title *</label>
+                                        <input type="text" class="form-control" id="memberRole" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="memberDepartment" class="form-label">Department *</label>
+                                        <select class="form-select" id="memberDepartment" required>
+                                            <option value="">Select department</option>
+                                            <!-- Departments will be populated here -->
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="memberStatus" class="form-label">Status</label>
+                                        <select class="form-select" id="memberStatus">
+                                            <option value="active">Active</option>
+                                            <option value="alumni">Alumni</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="memberEmail" class="form-label">Email (Optional)</label>
+                                        <input type="email" class="form-control" id="memberEmail">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="memberInstagram" class="form-label">Instagram (Optional)</label>
+                                        <input type="text" class="form-control" id="memberInstagram" placeholder="@username">
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="memberVisibility" class="form-label">Visibility</label>
+                                        <select class="form-select" id="memberVisibility">
+                                            <option value="public">Public</option>
+                                            <option value="internal">Internal Only</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label class="form-label">Profile Image</label>
+                                <div class="image-upload-container mb-3" id="memberImageUpload">
+                                    <i class="bi bi-cloud-arrow-up"></i>
+                                    <p class="mb-2">Click to upload image</p>
+                                    <small class="text-muted">JPG, PNG up to 2MB</small>
+                                    <input type="file" class="d-none" id="memberImageFile" accept="image/*">
+                                </div>
+                                
+                                <div class="text-center mb-3 d-none" id="memberImagePreviewContainer">
+                                    <img src="" alt="Preview" class="image-preview mb-2" id="memberImagePreview">
+                                    <button type="button" class="btn btn-sm btn-outline-danger" id="removeMemberImage">Remove Image</button>
+                                </div>
+                                
+                                <input type="hidden" id="memberImageUrl">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveMemberBtn">Save Member</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Project Modal -->
+    <div class="modal fade" id="projectModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="projectModalTitle">Add Project</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="projectForm">
+                        <input type="hidden" id="projectId">
+                        
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="row">
+                                    <div class="col-md-8 mb-3">
+                                        <label for="projectName" class="form-label">Project Name *</label>
+                                        <input type="text" class="form-control" id="projectName" required>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="projectColor" class="form-label">Accent Color</label>
+                                        <div class="d-flex align-items-center">
+                                            <input type="color" class="color-picker me-2" id="projectColor" value="#4361ee">
+                                            <input type="text" class="form-control" id="projectColorText" value="#4361ee" readonly style="max-width: 120px;">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="projectDescription" class="form-label">Description</label>
+                                    <textarea class="form-control" id="projectDescription" rows="3"></textarea>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="projectDepartment" class="form-label">Department *</label>
+                                        <select class="form-select" id="projectDepartment" required>
+                                            <option value="">Select department</option>
+                                            <!-- Departments will be populated here -->
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="projectStatus" class="form-label">Status</label>
+                                        <select class="form-select" id="projectStatus">
+                                            <option value="planning">Planning</option>
+                                            <option value="active">Active</option>
+                                            <option value="completed">Completed</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="projectUserCount" class="form-label">Members Involved</label>
+                                        <input type="number" class="form-control" id="projectUserCount" min="0" value="0">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="projectVisibility" class="form-label">Visibility</label>
+                                        <select class="form-select" id="projectVisibility">
+                                            <option value="public">Public</option>
+                                            <option value="internal">Internal Only</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label class="form-label">Project Logo/Image</label>
+                                <div class="image-upload-container mb-3" id="projectImageUpload">
+                                    <i class="bi bi-cloud-arrow-up"></i>
+                                    <p class="mb-2">Click to upload image</p>
+                                    <small class="text-muted">JPG, PNG up to 2MB</small>
+                                    <input type="file" class="d-none" id="projectImageFile" accept="image/*">
+                                </div>
+                                
+                                <div class="text-center mb-3 d-none" id="projectImagePreviewContainer">
+                                    <img src="" alt="Preview" class="image-preview mb-2" id="projectImagePreview">
+                                    <button type="button" class="btn btn-sm btn-outline-danger" id="removeProjectImage">Remove Image</button>
+                                </div>
+                                
+                                <input type="hidden" id="projectImageUrl">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveProjectBtn">Save Project</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Firebase Imports -->
+    <script type="module">
+        // Firebase Import
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
+        import { getDatabase, ref, set, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBBSNRSIEooqL1FZe-MQTzx2AntRvfJ85o",
+            authDomain: "joefootball-15e7a.firebaseapp.com",
+            databaseURL: "https://joefootball-15e7a-default-rtdb.firebaseio.com",
+            projectId: "joefootball-15e7a",
+            storageBucket: "joefootball-15e7a.firebasestorage.app",
+            messagingSenderId: "976347287101",
+            appId: "1:976347287101:web:b13786927105f963986454",
+            measurementId: "G-9ZD2Y7CK35"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const database = getDatabase(app);
+
+        // Make Firebase available globally
+        window.firebaseDatabase = database;
+        window.firebaseRef = ref;
+        window.firebaseSet = set;
+        window.firebasePush = push;
+        window.firebaseOnValue = onValue;
+        window.firebaseRemove = remove;
+        window.firebaseUpdate = update;
+        
+        console.log("Firebase initialized successfully");
+    </script>
+    
+    <!-- Main Application Script -->
+    <script>
+        // Wait for Firebase to load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize the application
+            initAdminPanel();
+        });
+
+        // ImgBB API Key
+        const IMGBB_API_KEY = 'a54cbfd8162625cb4cb468880bf0d0d0';
+
+        // Application state
+        let appState = {
+            departments: [],
+            members: [],
+            projects: [],
+            currentSection: 'dashboard'
+        };
+
+        // DOM Elements
+        const dom = {
+            // Sidebar and navigation
+            sidebar: document.getElementById('sidebar'),
+            sidebarToggle: document.getElementById('sidebarToggle'),
+            sidebarOverlay: document.getElementById('sidebarOverlay'),
+            pageTitle: document.getElementById('pageTitle'),
+            
+            // Dashboard elements
+            totalMembers: document.getElementById('totalMembers'),
+            activeMembers: document.getElementById('activeMembers'),
+            totalDepartments: document.getElementById('totalDepartments'),
+            totalProjects: document.getElementById('totalProjects'),
+            activeProjects: document.getElementById('activeProjects'),
+            
+            // Section containers
+            sections: {
+                dashboard: document.getElementById('dashboardSection'),
+                departments: document.getElementById('departmentsSection'),
+                members: document.getElementById('membersSection'),
+                projects: document.getElementById('projectsSection')
+            },
+            
+            // List containers
+            departmentsList: document.getElementById('departmentsList'),
+            membersList: document.getElementById('membersList'),
+            projectsList: document.getElementById('projectsList'),
+            
+            // Filter elements
+            memberFilterDepartment: document.getElementById('memberFilterDepartment'),
+            memberFilterStatus: document.getElementById('memberFilterStatus'),
+            projectFilterDepartment: document.getElementById('projectFilterDepartment'),
+            projectFilterStatus: document.getElementById('projectFilterStatus'),
+            
+            // Modal buttons
+            addDepartmentBtn: document.getElementById('addDepartmentBtn'),
+            addMemberBtn: document.getElementById('addMemberBtn'),
+            addProjectBtn: document.getElementById('addProjectBtn'),
+            
+            // Modal save buttons
+            saveDepartmentBtn: document.getElementById('saveDepartmentBtn'),
+            saveMemberBtn: document.getElementById('saveMemberBtn'),
+            saveProjectBtn: document.getElementById('saveProjectBtn'),
+            
+            // Modals
+            departmentModal: new bootstrap.Modal(document.getElementById('departmentModal')),
+            memberModal: new bootstrap.Modal(document.getElementById('memberModal')),
+            projectModal: new bootstrap.Modal(document.getElementById('projectModal'))
+        };
+
+        // Initialize the admin panel
+        function initAdminPanel() {
+            // Setup event listeners
+            setupEventListeners();
+            
+            // Load data from Firebase
+            loadFirebaseData();
+            
+            // Set active section
+            setActiveSection('dashboard');
+        }
+
+        // Setup all event listeners
+        function setupEventListeners() {
+            // Sidebar navigation
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const section = this.getAttribute('data-section');
+                    setActiveSection(section);
+                    
+                    // Close sidebar on mobile
+                    if (window.innerWidth < 992) {
+                        dom.sidebar.classList.remove('show');
+                        dom.sidebarOverlay.classList.remove('show');
+                    }
+                });
+            });
+            
+            // Sidebar toggle for mobile
+            dom.sidebarToggle.addEventListener('click', function() {
+                dom.sidebar.classList.toggle('show');
+                dom.sidebarOverlay.classList.toggle('show');
+            });
+            
+            // Close sidebar when clicking overlay
+            dom.sidebarOverlay.addEventListener('click', function() {
+                dom.sidebar.classList.remove('show');
+                this.classList.remove('show');
+            });
+            
+            // Add buttons
+            dom.addDepartmentBtn.addEventListener('click', () => openDepartmentModal());
+            dom.addMemberBtn.addEventListener('click', () => openMemberModal());
+            dom.addProjectBtn.addEventListener('click', () => openProjectModal());
+            
+            // Save buttons
+            dom.saveDepartmentBtn.addEventListener('click', saveDepartment);
+            dom.saveMemberBtn.addEventListener('click', saveMember);
+            dom.saveProjectBtn.addEventListener('click', saveProject);
+            
+            // Filter events
+            dom.memberFilterDepartment.addEventListener('change', filterMembers);
+            dom.memberFilterStatus.addEventListener('change', filterMembers);
+            dom.projectFilterDepartment.addEventListener('change', filterProjects);
+            dom.projectFilterStatus.addEventListener('change', filterProjects);
+            
+            // Image upload handlers
+            setupImageUpload('member');
+            setupImageUpload('project');
+            
+            // Color picker sync
+            setupColorPickers();
+        }
+
+        // Load data from Firebase
+        function loadFirebaseData() {
+            // Reference to the root of the database
+            const dbRef = window.firebaseRef(window.firebaseDatabase);
+            
+            // Load departments
+            const departmentsRef = window.firebaseRef(window.firebaseDatabase, 'departments');
+            window.firebaseOnValue(departmentsRef, (snapshot) => {
+                appState.departments = snapshot.val() || {};
+                renderDepartments();
+                updateDashboardStats();
+                populateDepartmentSelects();
+            });
+            
+            // Load members
+            const membersRef = window.firebaseRef(window.firebaseDatabase, 'members');
+            window.firebaseOnValue(membersRef, (snapshot) => {
+                appState.members = snapshot.val() || {};
+                renderMembers();
+                updateDashboardStats();
+                populateMemberSelects();
+            });
+            
+            // Load projects
+            const projectsRef = window.firebaseRef(window.firebaseDatabase, 'projects');
+            window.firebaseOnValue(projectsRef, (snapshot) => {
+                appState.projects = snapshot.val() || {};
+                renderProjects();
+                updateDashboardStats();
+            });
+        }
+
+        // Set active section
+        function setActiveSection(section) {
+            // Update sidebar active item
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('data-section') === section) {
+                    item.classList.add('active');
+                }
+            });
+            
+            // Hide all sections
+            Object.values(dom.sections).forEach(sectionElement => {
+                sectionElement.classList.add('d-none');
+            });
+            
+            // Show active section
+            dom.sections[section].classList.remove('d-none');
+            
+            // Update page title
+            const titles = {
+                dashboard: 'Dashboard',
+                departments: 'Departments',
+                members: 'Members',
+                projects: 'Projects'
+            };
+            dom.pageTitle.textContent = titles[section];
+            appState.currentSection = section;
+        }
+
+        // Update dashboard statistics
+        function updateDashboardStats() {
+            // Total members
+            const totalMembersCount = Object.keys(appState.members).length;
+            dom.totalMembers.textContent = totalMembersCount;
+            
+            // Active members
+            const activeMembersCount = Object.values(appState.members).filter(member => member.status === 'active').length;
+            dom.activeMembers.textContent = activeMembersCount;
+            
+            // Total departments
+            const totalDepartmentsCount = Object.keys(appState.departments).length;
+            dom.totalDepartments.textContent = totalDepartmentsCount;
+            
+            // Total projects
+            const totalProjectsCount = Object.keys(appState.projects).length;
+            dom.totalProjects.textContent = totalProjectsCount;
+            
+            // Active projects
+            const activeProjectsCount = Object.values(appState.projects).filter(project => project.status === 'active').length;
+            dom.activeProjects.textContent = activeProjectsCount;
+        }
+
+        // Render departments
+        function renderDepartments() {
+            dom.departmentsList.innerHTML = '';
+            
+            if (Object.keys(appState.departments).length === 0) {
+                dom.departmentsList.innerHTML = `
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            No departments found. Add your first department to get started.
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            Object.entries(appState.departments).forEach(([id, department]) => {
+                const headMember = department.head ? findMemberById(department.head) : null;
+                const memberCount = Object.values(appState.members).filter(member => member.department === id).length;
+                
+                const departmentCard = `
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card dashboard-card h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <h5 class="card-title mb-0">${department.name}</h5>
+                                    <div class="dropdown">
+                                        <button class="btn btn-link text-muted p-0" type="button" data-bs-toggle="dropdown">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#" onclick="editDepartment('${id}')"><i class="bi bi-pencil me-2"></i>Edit</a></li>
+                                            <li><a class="dropdown-item text-danger" href="#" onclick="deleteDepartment('${id}')"><i class="bi bi-trash me-2"></i>Delete</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex align-items-center mb-3">
+                                    <span class="color-badge" style="background-color: ${department.color || '#4361ee'}"></span>
+                                    <span class="text-muted">${memberCount} members</span>
+                                </div>
+                                
+                                <p class="card-text text-muted">${department.description || 'No description provided.'}</p>
+                                
+                                ${headMember ? `
+                                    <div class="d-flex align-items-center mt-3">
+                                        <div class="me-2">
+                                            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                                                <i class="bi bi-person text-muted"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <small class="d-block">Department Head</small>
+                                            <small class="fw-medium">${headMember.name}</small>
+                                        </div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                dom.departmentsList.innerHTML += departmentCard;
+            });
+        }
+
+        // Render members
+        function renderMembers() {
+            renderMembersList();
+        }
+
+        // Render members list with filtering
+        function renderMembersList() {
+            dom.membersList.innerHTML = '';
+            
+            const departmentFilter = dom.memberFilterDepartment.value;
+            const statusFilter = dom.memberFilterStatus.value;
+            
+            // Filter members
+            let filteredMembers = Object.entries(appState.members);
+            
+            if (departmentFilter) {
+                filteredMembers = filteredMembers.filter(([id, member]) => member.department === departmentFilter);
+            }
+            
+            if (statusFilter) {
+                filteredMembers = filteredMembers.filter(([id, member]) => member.status === statusFilter);
+            }
+            
+            if (filteredMembers.length === 0) {
+                dom.membersList.innerHTML = `
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            No members found. Add your first member to get started.
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            filteredMembers.forEach(([id, member]) => {
+                const department = appState.departments[member.department];
+                const departmentColor = department ? department.color : '#4361ee';
+                const departmentName = department ? department.name : 'Unknown';
+                
+                const memberCard = `
+                    <div class="col-md-6 col-lg-4 col-xl-3 mb-4">
+                        <div class="card member-card h-100">
+                            <div class="card-body">
+                                <div class="text-center mb-3">
+                                    ${member.imageUrl ? 
+                                        `<img src="${member.imageUrl}" alt="${member.name}" class="member-avatar">` : 
+                                        `<div class="member-avatar d-inline-flex align-items-center justify-content-center bg-light text-muted" style="border: 4px solid white;">
+                                            <i class="bi bi-person" style="font-size: 2rem;"></i>
+                                        </div>`
+                                    }
+                                    <h5 class="mt-3 mb-1">${member.name}</h5>
+                                    <p class="text-muted mb-2">${member.role}</p>
+                                    <span class="member-status ${member.status === 'active' ? 'status-active' : 'status-alumni'}">
+                                        ${member.status === 'active' ? 'Active' : 'Alumni'}
+                                    </span>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="bi bi-building me-2 text-muted"></i>
+                                        <span class="text-muted">${departmentName}</span>
+                                    </div>
+                                    
+                                    ${member.email ? `
+                                        <div class="d-flex align-items-center mb-2">
+                                            <i class="bi bi-envelope me-2 text-muted"></i>
+                                            <small class="text-muted">${member.email}</small>
+                                        </div>
+                                    ` : ''}
+                                    
+                                    ${member.instagram ? `
+                                        <div class="d-flex align-items-center mb-2">
+                                            <i class="bi bi-instagram me-2 text-muted"></i>
+                                            <small class="text-muted">${member.instagram}</small>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                                
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="visibility-badge ${member.visibility === 'public' ? 'visibility-public' : 'visibility-internal'}">
+                                        ${member.visibility === 'public' ? 'Public' : 'Internal'}
+                                    </span>
+                                    
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="dropdown">
+                                            <i class="bi bi-three-dots"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li><a class="dropdown-item" href="#" onclick="editMember('${id}')"><i class="bi bi-pencil me-2"></i>Edit</a></li>
+                                            <li><a class="dropdown-item text-danger" href="#" onclick="deleteMember('${id}')"><i class="bi bi-trash me-2"></i>Delete</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                dom.membersList.innerHTML += memberCard;
+            });
+        }
+
+        // Render projects
+        function renderProjects() {
+            renderProjectsList();
+        }
+
+        // Render projects list with filtering
+        function renderProjectsList() {
+            dom.projectsList.innerHTML = '';
+            
+            const departmentFilter = dom.projectFilterDepartment.value;
+            const statusFilter = dom.projectFilterStatus.value;
+            
+            // Filter projects
+            let filteredProjects = Object.entries(appState.projects);
+            
+            if (departmentFilter) {
+                filteredProjects = filteredProjects.filter(([id, project]) => project.department === departmentFilter);
+            }
+            
+            if (statusFilter) {
+                filteredProjects = filteredProjects.filter(([id, project]) => project.status === statusFilter);
+            }
+            
+            if (filteredProjects.length === 0) {
+                dom.projectsList.innerHTML = `
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            No projects found. Add your first project to get started.
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            filteredProjects.forEach(([id, project]) => {
+                const department = appState.departments[project.department];
+                const departmentName = department ? department.name : 'Unknown';
+                
+                // Status badge class
+                let statusBadgeClass = '';
+                if (project.status === 'planning') statusBadgeClass = 'badge-planning';
+                if (project.status === 'active') statusBadgeClass = 'badge-active';
+                if (project.status === 'completed') statusBadgeClass = 'badge-completed';
+                
+                const projectCard = `
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card dashboard-card h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <h5 class="card-title mb-0">${project.name}</h5>
+                                    <div class="dropdown">
+                                        <button class="btn btn-link text-muted p-0" type="button" data-bs-toggle="dropdown">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#" onclick="editProject('${id}')"><i class="bi bi-pencil me-2"></i>Edit</a></li>
+                                            <li><a class="dropdown-item text-danger" href="#" onclick="deleteProject('${id}')"><i class="bi bi-trash me-2"></i>Delete</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex align-items-center mb-3">
+                                    <span class="color-badge" style="background-color: ${project.color || '#4361ee'}"></span>
+                                    <span class="badge ${statusBadgeClass} me-2">${project.status}</span>
+                                    <span class="text-muted">${project.userCount || 0} members</span>
+                                </div>
+                                
+                                <p class="card-text text-muted">${project.description || 'No description provided.'}</p>
+                                
+                                <div class="row align-items-center mt-3">
+                                    <div class="col-6">
+                                        <small class="d-block text-muted">Department</small>
+                                        <small class="fw-medium">${departmentName}</small>
+                                    </div>
+                                    <div class="col-6 text-end">
+                                        <span class="visibility-badge ${project.visibility === 'public' ? 'visibility-public' : 'visibility-internal'}">
+                                            ${project.visibility === 'public' ? 'Public' : 'Internal'}
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                ${project.imageUrl ? `
+                                    <div class="mt-3 text-center">
+                                        <img src="${project.imageUrl}" alt="${project.name}" class="img-fluid rounded" style="max-height: 100px;">
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                dom.projectsList.innerHTML += projectCard;
+            });
+        }
+
+        // Populate department selects in forms and filters
+        function populateDepartmentSelects() {
+            const departmentOptions = Object.entries(appState.departments).map(([id, dept]) => 
+                `<option value="${id}">${dept.name}</option>`
+            ).join('');
+            
+            // Department selects
+            const departmentSelects = [
+                'memberDepartment',
+                'projectDepartment',
+                'memberFilterDepartment',
+                'projectFilterDepartment',
+                'departmentHead'
+            ];
+            
+            departmentSelects.forEach(selectId => {
+                const select = document.getElementById(selectId);
+                if (select) {
+                    const currentValue = select.value;
+                    const isFilter = selectId.includes('Filter');
+                    const baseOptions = isFilter ? '<option value="">All Departments</option>' : '<option value="">Select department</option>';
+                    
+                    select.innerHTML = baseOptions + departmentOptions;
+                    
+                    // Restore previous value if it still exists
+                    if (currentValue && appState.departments[currentValue]) {
+                        select.value = currentValue;
+                    }
+                }
+            });
+        }
+
+        // Populate member selects in forms
+        function populateMemberSelects() {
+            const memberSelect = document.getElementById('departmentHead');
+            if (memberSelect) {
+                const currentValue = memberSelect.value;
+                const memberOptions = Object.entries(appState.members).map(([id, member]) => 
+                    `<option value="${id}">${member.name} (${member.role})</option>`
+                ).join('');
+                
+                memberSelect.innerHTML = '<option value="">Select a member</option>' + memberOptions;
+                
+                // Restore previous value if it still exists
+                if (currentValue && appState.members[currentValue]) {
+                    memberSelect.value = currentValue;
+                }
+            }
+        }
+
+        // Find member by ID
+        function findMemberById(id) {
+            return appState.members[id] || null;
+        }
+
+        // Filter members
+        function filterMembers() {
+            renderMembersList();
+        }
+
+        // Filter projects
+        function filterProjects() {
+            renderProjectsList();
+        }
+
+        // Open department modal
+        function openDepartmentModal(departmentId = null) {
+            const modalTitle = document.getElementById('departmentModalTitle');
+            const form = document.getElementById('departmentForm');
+            
+            if (departmentId && appState.departments[departmentId]) {
+                // Edit mode
+                const department = appState.departments[departmentId];
+                modalTitle.textContent = 'Edit Department';
+                document.getElementById('departmentId').value = departmentId;
+                document.getElementById('departmentName').value = department.name;
+                document.getElementById('departmentDescription').value = department.description || '';
+                document.getElementById('departmentColor').value = department.color || '#4361ee';
+                document.getElementById('departmentColorText').value = department.color || '#4361ee';
+                document.getElementById('departmentHead').value = department.head || '';
+            } else {
+                // Add mode
+                modalTitle.textContent = 'Add Department';
+                form.reset();
+                document.getElementById('departmentId').value = '';
+                document.getElementById('departmentColor').value = '#4361ee';
+                document.getElementById('departmentColorText').value = '#4361ee';
+            }
+            
+            dom.departmentModal.show();
+        }
+
+        // Open member modal
+        function openMemberModal(memberId = null) {
+            const modalTitle = document.getElementById('memberModalTitle');
+            const form = document.getElementById('memberForm');
+            
+            if (memberId && appState.members[memberId]) {
+                // Edit mode
+                const member = appState.members[memberId];
+                modalTitle.textContent = 'Edit Member';
+                document.getElementById('memberId').value = memberId;
+                document.getElementById('memberName').value = member.name;
+                document.getElementById('memberRole').value = member.role;
+                document.getElementById('memberDepartment').value = member.department || '';
+                document.getElementById('memberStatus').value = member.status || 'active';
+                document.getElementById('memberEmail').value = member.email || '';
+                document.getElementById('memberInstagram').value = member.instagram || '';
+                document.getElementById('memberVisibility').value = member.visibility || 'public';
+                document.getElementById('memberImageUrl').value = member.imageUrl || '';
+                
+                // Show image preview if exists
+                if (member.imageUrl) {
+                    document.getElementById('memberImagePreview').src = member.imageUrl;
+                    document.getElementById('memberImagePreviewContainer').classList.remove('d-none');
+                    document.getElementById('memberImageUpload').classList.add('d-none');
+                } else {
+                    document.getElementById('memberImagePreviewContainer').classList.add('d-none');
+                    document.getElementById('memberImageUpload').classList.remove('d-none');
+                }
+            } else {
+                // Add mode
+                modalTitle.textContent = 'Add Member';
+                form.reset();
+                document.getElementById('memberId').value = '';
+                document.getElementById('memberStatus').value = 'active';
+                document.getElementById('memberVisibility').value = 'public';
+                document.getElementById('memberImageUrl').value = '';
+                document.getElementById('memberImagePreviewContainer').classList.add('d-none');
+                document.getElementById('memberImageUpload').classList.remove('d-none');
+            }
+            
+            dom.memberModal.show();
+        }
+
+        // Open project modal
+        function openProjectModal(projectId = null) {
+            const modalTitle = document.getElementById('projectModalTitle');
+            const form = document.getElementById('projectForm');
+            
+            if (projectId && appState.projects[projectId]) {
+                // Edit mode
+                const project = appState.projects[projectId];
+                modalTitle.textContent = 'Edit Project';
+                document.getElementById('projectId').value = projectId;
+                document.getElementById('projectName').value = project.name;
+                document.getElementById('projectDescription').value = project.description || '';
+                document.getElementById('projectColor').value = project.color || '#4361ee';
+                document.getElementById('projectColorText').value = project.color || '#4361ee';
+                document.getElementById('projectDepartment').value = project.department || '';
+                document.getElementById('projectStatus').value = project.status || 'planning';
+                document.getElementById('projectUserCount').value = project.userCount || 0;
+                document.getElementById('projectVisibility').value = project.visibility || 'public';
+                document.getElementById('projectImageUrl').value = project.imageUrl || '';
+                
+                // Show image preview if exists
+                if (project.imageUrl) {
+                    document.getElementById('projectImagePreview').src = project.imageUrl;
+                    document.getElementById('projectImagePreviewContainer').classList.remove('d-none');
+                    document.getElementById('projectImageUpload').classList.add('d-none');
+                } else {
+                    document.getElementById('projectImagePreviewContainer').classList.add('d-none');
+                    document.getElementById('projectImageUpload').classList.remove('d-none');
+                }
+            } else {
+                // Add mode
+                modalTitle.textContent = 'Add Project';
+                form.reset();
+                document.getElementById('projectId').value = '';
+                document.getElementById('projectColor').value = '#4361ee';
+                document.getElementById('projectColorText').value = '#4361ee';
+                document.getElementById('projectStatus').value = 'planning';
+                document.getElementById('projectUserCount').value = 0;
+                document.getElementById('projectVisibility').value = 'public';
+                document.getElementById('projectImageUrl').value = '';
+                document.getElementById('projectImagePreviewContainer').classList.add('d-none');
+                document.getElementById('projectImageUpload').classList.remove('d-none');
+            }
+            
+            dom.projectModal.show();
+        }
+
+        // Save department
+        function saveDepartment() {
+            const form = document.getElementById('departmentForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
+            const departmentId = document.getElementById('departmentId').value;
+            const departmentData = {
+                name: document.getElementById('departmentName').value,
+                description: document.getElementById('departmentDescription').value,
+                color: document.getElementById('departmentColor').value,
+                head: document.getElementById('departmentHead').value || null,
+                updatedAt: new Date().toISOString()
+            };
+            
+            const departmentsRef = window.firebaseRef(window.firebaseDatabase, 'departments');
+            
+            if (departmentId) {
+                // Update existing department
+                const departmentRef = window.firebaseRef(window.firebaseDatabase, `departments/${departmentId}`);
+                window.firebaseUpdate(departmentRef, departmentData)
+                    .then(() => {
+                        showToast('Department updated successfully', 'success');
+                        dom.departmentModal.hide();
+                    })
+                    .catch(error => {
+                        console.error('Error updating department:', error);
+                        showToast('Error updating department', 'error');
+                    });
+            } else {
+                // Add new department
+                const newDepartmentRef = window.firebasePush(departmentsRef);
+                window.firebaseSet(newDepartmentRef, {
+                    ...departmentData,
+                    createdAt: new Date().toISOString()
+                })
+                .then(() => {
+                    showToast('Department added successfully', 'success');
+                    dom.departmentModal.hide();
+                })
+                .catch(error => {
+                    console.error('Error adding department:', error);
+                    showToast('Error adding department', 'error');
+                });
+            }
+        }
+
+        // Save member
+        function saveMember() {
+            const form = document.getElementById('memberForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
+            const memberId = document.getElementById('memberId').value;
+            const memberData = {
+                name: document.getElementById('memberName').value,
+                role: document.getElementById('memberRole').value,
+                department: document.getElementById('memberDepartment').value,
+                status: document.getElementById('memberStatus').value,
+                email: document.getElementById('memberEmail').value || null,
+                instagram: document.getElementById('memberInstagram').value || null,
+                visibility: document.getElementById('memberVisibility').value,
+                imageUrl: document.getElementById('memberImageUrl').value || null,
+                updatedAt: new Date().toISOString()
+            };
+            
+            const membersRef = window.firebaseRef(window.firebaseDatabase, 'members');
+            
+            if (memberId) {
+                // Update existing member
+                const memberRef = window.firebaseRef(window.firebaseDatabase, `members/${memberId}`);
+                window.firebaseUpdate(memberRef, memberData)
+                    .then(() => {
+                        showToast('Member updated successfully', 'success');
+                        dom.memberModal.hide();
+                    })
+                    .catch(error => {
+                        console.error('Error updating member:', error);
+                        showToast('Error updating member', 'error');
+                    });
+            } else {
+                // Add new member
+                const newMemberRef = window.firebasePush(membersRef);
+                window.firebaseSet(newMemberRef, {
+                    ...memberData,
+                    createdAt: new Date().toISOString()
+                })
+                .then(() => {
+                    showToast('Member added successfully', 'success');
+                    dom.memberModal.hide();
+                })
+                .catch(error => {
+                    console.error('Error adding member:', error);
+                    showToast('Error adding member', 'error');
+                });
+            }
+        }
+
+        // Save project
+        function saveProject() {
+            const form = document.getElementById('projectForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
+            const projectId = document.getElementById('projectId').value;
+            const projectData = {
+                name: document.getElementById('projectName').value,
+                description: document.getElementById('projectDescription').value,
+                color: document.getElementById('projectColor').value,
+                department: document.getElementById('projectDepartment').value,
+                status: document.getElementById('projectStatus').value,
+                userCount: parseInt(document.getElementById('projectUserCount').value) || 0,
+                visibility: document.getElementById('projectVisibility').value,
+                imageUrl: document.getElementById('projectImageUrl').value || null,
+                updatedAt: new Date().toISOString()
+            };
+            
+            const projectsRef = window.firebaseRef(window.firebaseDatabase, 'projects');
+            
+            if (projectId) {
+                // Update existing project
+                const projectRef = window.firebaseRef(window.firebaseDatabase, `projects/${projectId}`);
+                window.firebaseUpdate(projectRef, projectData)
+                    .then(() => {
+                        showToast('Project updated successfully', 'success');
+                        dom.projectModal.hide();
+                    })
+                    .catch(error => {
+                        console.error('Error updating project:', error);
+                        showToast('Error updating project', 'error');
+                    });
+            } else {
+                // Add new project
+                const newProjectRef = window.firebasePush(projectsRef);
+                window.firebaseSet(newProjectRef, {
+                    ...projectData,
+                    createdAt: new Date().toISOString()
+                })
+                .then(() => {
+                    showToast('Project added successfully', 'success');
+                    dom.projectModal.hide();
+                })
+                .catch(error => {
+                    console.error('Error adding project:', error);
+                    showToast('Error adding project', 'error');
+                });
+            }
+        }
+
+        // Setup image upload
+        function setupImageUpload(type) {
+            const uploadContainer = document.getElementById(`${type}ImageUpload`);
+            const fileInput = document.getElementById(`${type}ImageFile`);
+            const previewContainer = document.getElementById(`${type}ImagePreviewContainer`);
+            const preview = document.getElementById(`${type}ImagePreview`);
+            const urlInput = document.getElementById(`${type}ImageUrl`);
+            const removeBtn = document.getElementById(`remove${type.charAt(0).toUpperCase() + type.slice(1)}Image`);
+            
+            if (!uploadContainer) return;
+            
+            uploadContainer.addEventListener('click', () => fileInput.click());
+            
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    uploadImageToImgBB(file, type);
+                }
+            });
+            
+            if (removeBtn) {
+                removeBtn.addEventListener('click', function() {
+                    preview.src = '';
+                    urlInput.value = '';
+                    previewContainer.classList.add('d-none');
+                    uploadContainer.classList.remove('d-none');
+                    fileInput.value = '';
+                });
+            }
+        }
+
+        // Upload image to ImgBB
+        function uploadImageToImgBB(file, type) {
+            const formData = new FormData();
+            formData.append('image', file);
+            formData.append('key', IMGBB_API_KEY);
+            
+            const uploadContainer = document.getElementById(`${type}ImageUpload`);
+            const previewContainer = document.getElementById(`${type}ImagePreviewContainer`);
+            const preview = document.getElementById(`${type}ImagePreview`);
+            const urlInput = document.getElementById(`${type}ImageUrl`);
+            
+            // Show loading state
+            uploadContainer.innerHTML = `
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2 mb-0">Uploading...</p>
+            `;
+            
+            fetch('https://api.imgbb.com/1/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const imageUrl = data.data.url;
+                    
+                    // Update preview
+                    preview.src = imageUrl;
+                    urlInput.value = imageUrl;
+                    
+                    // Show preview, hide upload container
+                    previewContainer.classList.remove('d-none');
+                    uploadContainer.classList.add('d-none');
+                    
+                    showToast('Image uploaded successfully', 'success');
+                } else {
+                    throw new Error(data.error.message || 'Upload failed');
+                }
+            })
+            .catch(error => {
+                console.error('Image upload error:', error);
+                showToast(`Error uploading image: ${error.message}`, 'error');
+                
+                // Reset upload container
+                uploadContainer.innerHTML = `
+                    <i class="bi bi-cloud-arrow-up"></i>
+                    <p class="mb-2">Click to upload image</p>
+                    <small class="text-muted">JPG, PNG up to 2MB</small>
+                `;
+            });
+        }
+
+        // Setup color pickers
+        function setupColorPickers() {
+            // Department color picker
+            const deptColorPicker = document.getElementById('departmentColor');
+            const deptColorText = document.getElementById('departmentColorText');
+            
+            if (deptColorPicker && deptColorText) {
+                deptColorPicker.addEventListener('input', function() {
+                    deptColorText.value = this.value;
+                });
+                
+                deptColorText.addEventListener('input', function() {
+                    if (this.value.match(/^#[0-9A-F]{6}$/i)) {
+                        deptColorPicker.value = this.value;
+                    }
+                });
+            }
+            
+            // Project color picker
+            const projectColorPicker = document.getElementById('projectColor');
+            const projectColorText = document.getElementById('projectColorText');
+            
+            if (projectColorPicker && projectColorText) {
+                projectColorPicker.addEventListener('input', function() {
+                    projectColorText.value = this.value;
+                });
+                
+                projectColorText.addEventListener('input', function() {
+                    if (this.value.match(/^#[0-9A-F]{6}$/i)) {
+                        projectColorPicker.value = this.value;
+                    }
+                });
+            }
+        }
+
+        // Edit department
+        window.editDepartment = function(id) {
+            openDepartmentModal(id);
+        };
+
+        // Edit member
+        window.editMember = function(id) {
+            openMemberModal(id);
+        };
+
+        // Edit project
+        window.editProject = function(id) {
+            openProjectModal(id);
+        };
+
+        // Delete department
+        window.deleteDepartment = function(id) {
+            if (confirm('Are you sure you want to delete this department?')) {
+                const departmentRef = window.firebaseRef(window.firebaseDatabase, `departments/${id}`);
+                window.firebaseRemove(departmentRef)
+                    .then(() => {
+                        showToast('Department deleted successfully', 'success');
+                    })
+                    .catch(error => {
+                        console.error('Error deleting department:', error);
+                        showToast('Error deleting department', 'error');
+                    });
+            }
+        };
+
+        // Delete member
+        window.deleteMember = function(id) {
+            if (confirm('Are you sure you want to delete this member?')) {
+                const memberRef = window.firebaseRef(window.firebaseDatabase, `members/${id}`);
+                window.firebaseRemove(memberRef)
+                    .then(() => {
+                        showToast('Member deleted successfully', 'success');
+                    })
+                    .catch(error => {
+                        console.error('Error deleting member:', error);
+                        showToast('Error deleting member', 'error');
+                    });
+            }
+        };
+
+        // Delete project
+        window.deleteProject = function(id) {
+            if (confirm('Are you sure you want to delete this project?')) {
+                const projectRef = window.firebaseRef(window.firebaseDatabase, `projects/${id}`);
+                window.firebaseRemove(projectRef)
+                    .then(() => {
+                        showToast('Project deleted successfully', 'success');
+                    })
+                    .catch(error => {
+                        console.error('Error deleting project:', error);
+                        showToast('Error deleting project', 'error');
+                    });
+            }
+        };
+
+        // Show toast notification
+        function showToast(message, type = 'info') {
+            // Remove existing toasts
+            const existingToasts = document.querySelectorAll('.toast-container');
+            existingToasts.forEach(toast => toast.remove());
+            
+            // Create toast container
+            const toastContainer = document.createElement('div');
+            toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+            toastContainer.style.zIndex = '9999';
+            
+            // Toast types
+            const typeClasses = {
+                success: 'bg-success text-white',
+                error: 'bg-danger text-white',
+                info: 'bg-info text-white',
+                warning: 'bg-warning text-dark'
+            };
+            
+            // Create toast
+            const toastId = `toast-${Date.now()}`;
+            const toast = `
+                <div id="${toastId}" class="toast align-items-center border-0 ${typeClasses[type] || typeClasses.info}" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            ${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            `;
+            
+            toastContainer.innerHTML = toast;
+            document.body.appendChild(toastContainer);
+            
+            // Initialize and show toast
+            const toastElement = document.getElementById(toastId);
+            const bsToast = new bootstrap.Toast(toastElement, {
+                delay: 3000
+            });
+            bsToast.show();
+            
+            // Remove toast after it's hidden
+            toastElement.addEventListener('hidden.bs.toast', function() {
+                toastContainer.remove();
+            });
+        }
+    </script>
+</body>
+</html>
